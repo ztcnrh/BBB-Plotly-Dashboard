@@ -1,9 +1,9 @@
-// Render the "Top 10 OTUs Sample Values" bar chart
-initBarChart();
+// Render default visuals
+init();
 
 
-// Function to render the default bar chart before anything is selected in the dropdown menu
-function initBarChart() {
+// Function to render all visuals before anything is selected in the dropdown menu
+function init() {
 
     // Load data
     d3.json("data/samples.json").then((data) => {
@@ -35,6 +35,7 @@ function initBarChart() {
             var demInfo = panel.append("p");
             demInfo.text(`${key}: ${value}`);
         })
+        
         // ----------------------------------------------
         // Plot 1: Trace1 --> Horizontal Bar chart for "Top 10 OTUs Sample Values"
         var trace1 = {
@@ -62,7 +63,6 @@ function initBarChart() {
 
         // Render the plot in the corresponding html element
         Plotly.newPlot("bar", data, layout, {displayModeBar: false});
-        // ----------------------------------------------
     })
 }
 
@@ -73,8 +73,8 @@ function getId() {
     return selectedId;
 }
 
-// Function to re-render plot when an option is selected (or changed)
-function updateBarChart(selectedId) {
+// Function to re-render visuals when an option is selected (or changed)
+function updateVisuals(selectedId) {
 
     // Load data
     d3.json("data/samples.json").then((data) => {
@@ -82,6 +82,24 @@ function updateBarChart(selectedId) {
         // Filter to include only the data for the selected sample ID
         var filteredData = data.samples.filter(subject => subject.id === selectedId);
 
+
+        // ----------------------------------------------
+        // Update panel
+        panel = d3.select("#sample-metadata");
+        // Clear the exisiting default children <p> tags from an the <div>
+        panel.html("")
+
+        // Filter to include only the metadata for the selected sample ID
+        filteredMetaData = data.metadata.filter(subject => subject.id == selectedId);
+
+        // Append <p> tags with key-value paired metadata
+        Object.entries(filteredMetaData[0]).forEach(([key, value]) => {
+            var demInfo = panel.append("p");
+            demInfo.text(`${key}: ${value}`);
+        })
+
+        // ----------------------------------------------
+        // Update bar chart
         var x = filteredData[0].sample_values.slice(0, 10).map(value => value).reverse();
         var y = filteredData[0].otu_ids.slice(0, 10).map(id => `OTU ${id}`).reverse();
         var text = filteredData[0].otu_labels.slice(0, 10).map(label => label).reverse();
@@ -95,7 +113,7 @@ function updateBarChart(selectedId) {
 
 // Function to run when HTML <select onchange=""> is called upon
 function optionChanged(idValue) {
-    updateBarChart(idValue);
+    updateVisuals(idValue);
     // updateMetaData(id);
 }
 
