@@ -33,7 +33,7 @@ function init() {
         })
         
         // ----------------------------------------------
-        // Plot 1: Trace1 --> Horizontal Bar chart
+        // Plot 1: Horizontal Bar chart
         
         // Filter to include only the data for the selected subject ID
         var filteredData = data.samples.filter(subject => subject.id === selectedId);
@@ -48,24 +48,24 @@ function init() {
 
         var dataBar = [traceBar];
 
-        var layout = {
+        var layoutBar = {
             title: "Selected Test Subject's Top 10 OTU Sample Values",
             xaxis: { title: "Sample Values"},
-            width: 550,
-            height: 500,
+            width: 500,
+            height: 470,
             margin: {
             l: 150,
             r: 150,
-            b: 50,
+            b: 80,
             t: 50
             }
         };
 
         // Render the plot in the corresponding html element
-        Plotly.newPlot("bar", dataBar, layout, {displayModeBar: false});
+        Plotly.newPlot("bar", dataBar, layoutBar, {displayModeBar: false});
 
         // ----------------------------------------------
-        // Plot 2: Trace2 --> Bubble chart for each test subject's sample data
+        // Plot 2: Bubble chart for each test subject's sample data
         var traceBubble = {
             x: filteredData[0].otu_ids,
             y: filteredData[0].sample_values,
@@ -79,13 +79,52 @@ function init() {
         
         var dataBubble = [traceBubble];
 
-        var layout = {
+        var layoutBubble = {
             title: "Selected Test Subject's Sample Values by OTU ID",
             xaxis: { title: "OTU ID"}
         };
 
         // Render the plot in the corresponding html element
-        Plotly.newPlot("bubble", dataBubble, layout, {displaylogo: false});
+        Plotly.newPlot("bubble", dataBubble, layoutBubble, {displaylogo: false});
+
+        // ----------------------------------------------
+        // Plot 3: Gauge chart for each test subject's belly button weekly washing frequency
+        var wfreq = filteredMetaData[0].wfreq;
+        
+        var dataGuage = [
+            {
+                domain: { x: [0, 1], y: [0, 1] },
+                value: wfreq,
+                title: { text: "<b>Belly Button Washing Frequency</b><br>Scrubs per Week" },
+                type: "indicator",
+                mode: "gauge+number",
+                gauge: {
+                    axis: {range: [0, d3.max(data.metadata.map(subject => subject.wfreq))]},
+                    bar: { color: "#db5773" },
+                    borderwidth: 2,
+                    bordercolor: "#f0f0f1",
+                    steps: [
+                    {range: [0, 1], color: "#f0f6fc"},
+                    {range: [1, 2], color: "#c5d9ed"},
+                    {range: [2, 3], color: "#9ec2e6"},
+                    {range: [3, 4], color: "#72aee6"},
+                    {range: [4, 5], color: "#4f94d4"},
+                    {range: [5, 6], color: "#3582c4"},
+                    {range: [6, 7], color: "#2271b1"},
+                    {range: [7, 8], color: "#135e96"},
+                    {range: [8, 9], color: "#0a4b78"}
+                    ]
+                }
+            }
+        ];
+
+        // Render the plot in the corresponding html element
+        Plotly.newPlot("gauge", dataGuage);
+
+        // Adjust gauge chart title position...
+        d3.selectAll("text>tspan.line").attr("y", "-20");
+        // Customize the color of the gauge chart's number indicator
+        d3.selectAll("g>text.number").style("fill", "#db5773");
     })
 }
 
@@ -99,7 +138,7 @@ function getId() {
 
 
 // Function to re-render visuals when an option (ID) is selected (or changed)
-function updateVisuals(selectedId) {
+function optionChanged(selectedId) {
 
     // Load data
     d3.json("data/samples.json").then((data) => {
@@ -136,7 +175,7 @@ function updateVisuals(selectedId) {
         };
 
         // Restyle bar chart
-        Plotly.restyle("bar", updateBar, 0);
+        Plotly.restyle("bar", updateBar);
 
         // ----------------------------------------------
         // Update bubble chart
@@ -156,12 +195,17 @@ function updateVisuals(selectedId) {
 
         // Restyle bubble chart
         Plotly.restyle("bubble", updateBubble);
+
+        // ----------------------------------------------
+        // Update gauge chart
+        var wfreq = filteredMetaData[0].wfreq;
+
+        Plotly.restyle("gauge", "value", [wfreq]);
+
+        // Re-adjust gauge chart title position...
+        d3.selectAll("text>tspan.line").attr("y", "-20");
+        // Customize the color of the gauge chart's number indicator
+        d3.selectAll("g>text.number").style("fill", "#db5773");
     })
 }
-
-// Function to run when HTML <select onchange=""> is called upon
-function optionChanged(idValue) {
-    updateVisuals(idValue);
-}
-
 
