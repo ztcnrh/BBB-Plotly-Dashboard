@@ -54,7 +54,7 @@ function init() {
             width: 500,
             height: 470,
             margin: {
-            l: 150,
+            l: 120,
             r: 150,
             b: 80,
             t: 50
