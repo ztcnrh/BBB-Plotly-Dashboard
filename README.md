@@ -8,4 +8,6 @@ The goal is to utilize Plotly, JavaScript, HTML, and CSS to display the dataset 
 
 <strong>Below is a highlight of the webpage.</strong> View the fully deployed Github Pages here: https://ztcnrh.github.io/BBB-Plotly-Dashboard/
 
+<br>
+
 ![Plotly Dashboard Preview](highlights/deployment_highlight.png)
