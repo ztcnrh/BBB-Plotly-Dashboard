@@ -49,7 +49,7 @@ function init() {
         var dataBar = [traceBar];
 
         var layoutBar = {
-            title: "Selected Test Subject's Top 10 OTU Sample Values",
+            title: `Test Subject ${selectedId}'s Top 10 OTUs`,
             xaxis: { title: "Sample Values"},
             width: 500,
             height: 470,
@@ -80,7 +80,7 @@ function init() {
         var dataBubble = [traceBubble];
 
         var layoutBubble = {
-            title: "Selected Test Subject's Sample Values by OTU ID",
+            title: `Test Subject ${selectedId}'s Sample Values by OTU ID`,
             xaxis: { title: "OTU ID"}
         };
 
@@ -91,7 +91,7 @@ function init() {
         // Plot 3: Gauge chart for each test subject's belly button weekly washing frequency
         var wfreq = filteredMetaData[0].wfreq;
         
-        var dataGuage = [
+        var dataGauge = [
             {
                 domain: { x: [0, 1], y: [0, 1] },
                 value: wfreq,
@@ -119,7 +119,7 @@ function init() {
         ];
 
         // Render the plot in the corresponding html element
-        Plotly.newPlot("gauge", dataGuage);
+        Plotly.newPlot("gauge", dataGauge);
 
         // Adjust gauge chart title position...
         d3.selectAll("text>tspan.line").attr("y", "-20");
@@ -168,14 +168,18 @@ function optionChanged(selectedId) {
         var yBar = filteredData[0].otu_ids.slice(0, 10).map(id => `OTU ${id}`).reverse();
         var textBar = filteredData[0].otu_labels.slice(0, 10).map(label => label).reverse();
         
-        var updateBar = {
+        var dataUpdateBar = {
             "x": [xBar],
             "y": [yBar],
             "text": [textBar]
         };
 
-        // Restyle bar chart
-        Plotly.restyle("bar", updateBar);
+        var layoutUpdateBar = {
+            title: `Test Subject ${selectedId}'s Top 10 OTUs`
+        };
+
+        // Update the bar chart with data plus title to reflect the selected ID
+        Plotly.update("bar", dataUpdateBar, layoutUpdateBar);
 
         // ----------------------------------------------
         // Update bubble chart
@@ -185,7 +189,7 @@ function optionChanged(selectedId) {
         var colorBubble = filteredData[0].otu_ids;
         var sizeBubble = filteredData[0].sample_values;
         
-        var updateBubble = {
+        var dataUpdateBubble = {
             "x": [xBubble],
             "y": [yBubble],
             "text": [textBubble],
@@ -193,13 +197,18 @@ function optionChanged(selectedId) {
             "marker.size": [sizeBubble]
         };
 
-        // Restyle bubble chart
-        Plotly.restyle("bubble", updateBubble);
+        var layoutUpdateBubble = {
+            title: `Test Subject ${selectedId}'s Sample Values by OTU ID`
+        };
+
+        // Update the bubble chart with data plus title to reflect the selected ID
+        Plotly.update("bubble", dataUpdateBubble, layoutUpdateBubble);
 
         // ----------------------------------------------
         // Update gauge chart
         var wfreq = filteredMetaData[0].wfreq;
 
+        // Restyle gauge chart
         Plotly.restyle("gauge", "value", [wfreq]);
 
         // Re-adjust gauge chart title position...
