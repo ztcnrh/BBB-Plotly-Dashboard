@@ -99,7 +99,7 @@ function init() {
                 type: "indicator",
                 mode: "gauge+number",
                 gauge: {
-                    axis: {range: [0, d3.max(data.metadata.map(subject => subject.wfreq))]},
+                    axis: {range: [0, d3.max(data.metadata.map(subject => subject.wfreq))], tickmode: "linear"},
                     bar: { color: "#db5773" },
                     borderwidth: 2,
                     bordercolor: "#f0f0f1",
